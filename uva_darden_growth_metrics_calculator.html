@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business & Commercial Calculator</title>
+  <style>
+    :root {
+      --uva-navy: #1b365d;
+      --uva-blue: #232d4b;
+      --uva-orange: #e57200;
+      --uva-light: #f7f8fa;
+      --card: #ffffff;
+      --text: #16202a;
+      --muted: #5a6573;
+      --border: #d9dee5;
+      --success: #1f6f43;
+      --danger: #9f2d2d;
+      --shadow: 0 10px 24px rgba(20, 30, 55, 0.10);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Georgia", "Times New Roman", serif;
+      background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%);
+      color: var(--text);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--uva-blue), var(--uva-navy));
+      color: white;
+      padding: 36px 24px 30px;
+      border-bottom: 6px solid var(--uva-orange);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.05;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      max-width: 880px;
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.95;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .creator {
+      margin-top: 16px;
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 28px auto 40px;
+      padding: 0 18px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .toolbar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+    }
+
+    .toolbar-title {
+      margin: 0 0 10px;
+      color: var(--uva-navy);
+      font-size: 1.05rem;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .jump-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .jump-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid #ccd5e0;
+      background: #fff;
+      color: var(--uva-navy);
+      text-decoration: none;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .calculator-card {
+      scroll-margin-top: 18px;
+    }
+
+    .hidden-card {
+      display: none;
+    }
+
+    .intro-grid,
+    .calculator-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .intro-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      margin-bottom: 22px;
+    }
+
+    .calculator-grid {
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 20px 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-header h2,
+    .card-header h3 {
+      margin: 0;
+      color: var(--uva-navy);
+      font-size: 1.22rem;
+    }
+
+    .card-header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .card-body {
+      padding: 18px 20px 22px;
+    }
+
+    .concept-title {
+      font-size: 1rem;
+      color: var(--uva-orange);
+      margin: 0 0 10px;
+      font-family: Arial, Helvetica, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .formula-box {
+      background: #f5f7fb;
+      border-left: 5px solid var(--uva-orange);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 10px 0 14px;
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+
+    .formula-box code {
+      background: rgba(27, 54, 93, 0.08);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "Courier New", monospace;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--uva-navy);
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 10px;
+      border: 1px solid #cfd6df;
+      font-size: 1rem;
+      background: white;
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--uva-orange);
+      box-shadow: 0 0 0 3px rgba(229, 114, 0, 0.12);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .btn-primary {
+      background: var(--uva-orange);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--uva-navy);
+      color: white;
+    }
+
+    .result {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fbfcfe;
+    }
+
+    .result-title {
+      margin: 0 0 8px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .result-value {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--uva-navy);
+      word-break: break-word;
+    }
+
+    .result-explain {
+      margin-top: 10px;
+      color: var(--text);
+      line-height: 1.65;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .positive { color: var(--success); }
+    .negative { color: var(--danger); }
+
+    .footer-note {
+      max-width: 1200px;
+      margin: 8px auto 28px;
+      padding: 0 18px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .calculator-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .jump-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .field-grid { grid-template-columns: 1fr; }
+      .hero { padding: 28px 18px 24px; }
+      .card-body, .card-header, .toolbar-card { padding-left: 16px; padding-right: 16px; }
+      .container { padding: 0 14px; }
+      .jump-list { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .actions { flex-direction: column; }
+      .result-value { font-size: 1.45rem; }
+      h1 { line-height: 1.15; }
+    }
+      .hero { padding: 28px 18px 24px; }
+      .card-body, .card-header { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Business & Commercial Calculator</div>
+      <h1>Growth, Margin, Rule of Three, Sales Metrics, and Percentage Difference</h1>
+      <div class="subtitle">
+        A structured learning app designed to help you not only solve the equations, but understand the formula logic behind each business metric. Built with a classroom-style visual approach inspired by executive education aesthetics.
+      </div>
+      <div class="creator">Created by Luis V., MBA</div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section class="toolbar">
+      <div class="toolbar-card">
+        <h2 class="toolbar-title">Navigate formulas</h2>
+        <div class="filter-row">
+          <div>
+            <label for="formulaFilter">Select a calculator</label>
+            <select id="formulaFilter" onchange="filterCalculators()">
+              <option value="all">Show all calculators</option>
+              <option value="growth-card">Growth Rate</option>
+              <option value="margin-card">Margin</option>
+              <option value="rule-card">Rule of Three</option>
+              <option value="sales-card">Sales Uplift</option>
+              <option value="diff-card">Percentage Difference</option>
+              <option value="summary-card">Multi-Metric Sales Summary</option>
+              <option value="evo-card">Evolution Index</option>
+              <option value="cagr-card">CAGR</option>
+            </select>
+          </div>
+          <div>
+            <label for="formulaSearch">Quick search</label>
+            <input type="text" id="formulaSearch" placeholder="Type growth, margin, cagr..." oninput="searchCalculators()" />
+          </div>
+        </div>
+        <div class="jump-list">
+          <a class="jump-chip" href="#growth-card">Growth</a>
+          <a class="jump-chip" href="#margin-card">Margin</a>
+          <a class="jump-chip" href="#rule-card">Rule of 3</a>
+          <a class="jump-chip" href="#sales-card">Sales Uplift</a>
+          <a class="jump-chip" href="#diff-card">% Difference</a>
+          <a class="jump-chip" href="#summary-card">Sales Summary</a>
+          <a class="jump-chip" href="#evo-card">Evolution Index</a>
+          <a class="jump-chip" href="#cagr-card">CAGR</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro-grid">
+      <article class="card">
+        <div class="card-header">
+          <h2>How to use this app</h2>
+        </div>
+        <div class="card-body">
+          <p class="small-note">
+            Each section includes three elements: the business formula, the inputs you need, and a worked interpretation of the result. This makes the app useful as both a calculator and a self-study tool.
+          </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <h2>What is covered</h2>
+        </div>
+        <div class="card-body">
+          <p class="small-note">
+            Revenue growth, gross margin, operating margin, rule of three, percentage difference, sales uplift, and growth rates. The emphasis is practical business analysis rather than abstract mathematics.
+          </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <h2>When to use it</h2>
+        </div>
+        <div class="card-body">
+          <p class="small-note">
+            Useful for MBA-style exercises, business reviews, brand plans, sales analysis, performance tracking, and interview preparation where you must explain both the answer and the logic behind it.
+          </p>
+        </div>
+      </article>
+
+      <article class="card calculator-card" id="cagr-card" data-keywords="cagr compound annual growth rate annualized growth finance business long term growth">
+        <div class="card-header">
+          <h3>8. CAGR Calculator</h3>
+          <p>Measures the annualized growth rate across multiple years or periods.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            <strong>CAGR (%)</strong><br>
+            <code>((Ending Value / Beginning Value)^(1 / Number of Periods) - 1) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="cagrBeginning">Beginning value</label>
+              <input type="number" id="cagrBeginning" placeholder="e.g. 100000" />
+            </div>
+            <div class="field">
+              <label for="cagrEnding">Ending value</label>
+              <input type="number" id="cagrEnding" placeholder="e.g. 180000" />
+            </div>
+            <div class="field full">
+              <label for="cagrPeriods">Number of periods / years</label>
+              <input type="number" id="cagrPeriods" placeholder="e.g. 3" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateCAGR()">Calculate CAGR</button>
+            <button class="btn-secondary" onclick="resetSection(['cagrBeginning','cagrEnding','cagrPeriods'],'cagrResult')">Reset</button>
+          </div>
+
+          <div class="result" id="cagrResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">Use CAGR when you want the smoothed annual growth rate over multiple periods.</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="calculator-grid">
+      <article class="card calculator-card" id="growth-card" data-keywords="growth growth rate increase decrease sales performance formula">
+        <div class="card-header">
+          <h3>1. Growth Rate Calculator</h3>
+          <p>Measure how much a value increased or decreased relative to the starting period.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            <strong>Growth Rate (%)</strong><br>
+            <code>((New Value - Old Value) / Old Value) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="growthOld">Old value</label>
+              <input type="number" id="growthOld" placeholder="e.g. 100000" />
+            </div>
+            <div class="field">
+              <label for="growthNew">New value</label>
+              <input type="number" id="growthNew" placeholder="e.g. 125000" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateGrowth()">Calculate growth</button>
+            <button class="btn-secondary" onclick="resetSection(['growthOld','growthNew'],'growthResult')">Reset</button>
+          </div>
+
+          <div class="result" id="growthResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">Enter the previous and current values to see the growth rate and explanation.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card calculator-card" id="margin-card" data-keywords="margin gross margin revenue cost profit profitability formula">
+        <div class="card-header">
+          <h3>2. Margin Calculator</h3>
+          <p>Understand how much profit remains after costs, as a percentage of revenue.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            <strong>Margin (%)</strong><br>
+            <code>((Revenue - Cost) / Revenue) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="marginRevenue">Revenue</label>
+              <input type="number" id="marginRevenue" placeholder="e.g. 500000" />
+            </div>
+            <div class="field">
+              <label for="marginCost">Cost</label>
+              <input type="number" id="marginCost" placeholder="e.g. 320000" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateMargin()">Calculate margin</button>
+            <button class="btn-secondary" onclick="resetSection(['marginRevenue','marginCost'],'marginResult')">Reset</button>
+          </div>
+
+          <div class="result" id="marginResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">Enter revenue and cost to calculate the margin percentage.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card calculator-card" id="rule-card" data-keywords="rule of three proportion proportionality ratio scaling forecast">
+        <div class="card-header">
+          <h3>3. Rule of Three Calculator</h3>
+          <p>Solve proportional business questions such as forecasts, pricing equivalence, or scaling scenarios.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            If <code>A : B = C : X</code>, then<br>
+            <code>X = (B × C) / A</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="ruleA">A</label>
+              <input type="number" id="ruleA" placeholder="e.g. 10" />
+            </div>
+            <div class="field">
+              <label for="ruleB">B</label>
+              <input type="number" id="ruleB" placeholder="e.g. 100" />
+            </div>
+            <div class="field">
+              <label for="ruleC">C</label>
+              <input type="number" id="ruleC" placeholder="e.g. 15" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateRuleOfThree()">Solve proportion</button>
+            <button class="btn-secondary" onclick="resetSection(['ruleA','ruleB','ruleC'],'ruleResult')">Reset</button>
+          </div>
+
+          <div class="result" id="ruleResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">Provide A, B, and C to solve for X.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card calculator-card" id="sales-card" data-keywords="sales uplift campaign uplift increase baseline sales growth">
+        <div class="card-header">
+          <h3>4. Sales Uplift Calculator</h3>
+          <p>Estimate the incremental gain generated after an initiative, campaign, or sales action.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            <strong>Sales Uplift (%)</strong><br>
+            <code>((Sales After - Sales Before) / Sales Before) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="salesBefore">Sales before</label>
+              <input type="number" id="salesBefore" placeholder="e.g. 70000" />
+            </div>
+            <div class="field">
+              <label for="salesAfter">Sales after</label>
+              <input type="number" id="salesAfter" placeholder="e.g. 91000" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateSalesUplift()">Calculate uplift</button>
+            <button class="btn-secondary" onclick="resetSection(['salesBefore','salesAfter'],'salesResult')">Reset</button>
+          </div>
+
+          <div class="result" id="salesResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">Use this for campaign analysis, launch performance, or channel uplift.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card calculator-card" id="diff-card" data-keywords="percentage difference compare comparison relative distance formula">
+        <div class="card-header">
+          <h3>5. Percentage Difference Calculator</h3>
+          <p>Compare two values and understand the relative distance between them.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            <strong>Percentage Difference (%)</strong><br>
+            <code>(|Value 1 - Value 2| / ((Value 1 + Value 2) / 2)) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="diffOne">Value 1</label>
+              <input type="number" id="diffOne" placeholder="e.g. 48" />
+            </div>
+            <div class="field">
+              <label for="diffTwo">Value 2</label>
+              <input type="number" id="diffTwo" placeholder="e.g. 60" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculatePercentageDifference()">Calculate difference</button>
+            <button class="btn-secondary" onclick="resetSection(['diffOne','diffTwo'],'diffResult')">Reset</button>
+          </div>
+
+          <div class="result" id="diffResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">This is particularly useful when neither number should automatically be treated as the base.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card calculator-card" id="summary-card" data-keywords="sales summary gross profit growth margin multi metric business review">
+        <div class="card-header">
+          <h3>6. Multi-Metric Sales Summary</h3>
+          <p>A compact business review combining growth, absolute increase, and gross profit.</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formulas</div>
+          <div class="formula-box">
+            <strong>Absolute Growth</strong>: <code>Current Sales - Previous Sales</code><br>
+            <strong>Growth %</strong>: <code>((Current - Previous) / Previous) × 100</code><br>
+            <strong>Gross Profit</strong>: <code>Sales - Cost</code><br>
+            <strong>Gross Margin %</strong>: <code>((Sales - Cost) / Sales) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="summaryPrevious">Previous sales</label>
+              <input type="number" id="summaryPrevious" placeholder="e.g. 800000" />
+            </div>
+            <div class="field">
+              <label for="summaryCurrent">Current sales</label>
+              <input type="number" id="summaryCurrent" placeholder="e.g. 920000" />
+            </div>
+            <div class="field full">
+              <label for="summaryCost">Current period cost</label>
+              <input type="number" id="summaryCost" placeholder="e.g. 560000" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateSummary()">Build summary</button>
+            <button class="btn-secondary" onclick="resetSection(['summaryPrevious','summaryCurrent','summaryCost'],'summaryResult')">Reset</button>
+          </div>
+
+          <div class="result" id="summaryResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">This combines commercial and profitability logic in one view.</div>
+          </div>
+        </div>
+      </article>
+          <article class="card calculator-card" id="evo-card" data-keywords="evolution index base 100 indexed evolution commercial trend performance">
+        <div class="card-header">
+          <h3>7. Evolution Index</h3>
+          <p>Measures indexed evolution versus a base period (base = 100).</p>
+        </div>
+        <div class="card-body">
+          <div class="concept-title">Formula</div>
+          <div class="formula-box">
+            <strong>Evolution Index</strong><br>
+            <code>(Current Value / Base Value) × 100</code>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="evoBase">Base value</label>
+              <input type="number" id="evoBase" placeholder="e.g. 250000" />
+            </div>
+            <div class="field">
+              <label for="evoCurrent">Current value</label>
+              <input type="number" id="evoCurrent" placeholder="e.g. 300000" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="calculateEvolution()">Calculate index</button>
+            <button class="btn-secondary" onclick="resetSection(['evoBase','evoCurrent'],'evoResult')">Reset</button>
+          </div>
+
+          <div class="result" id="evoResult">
+            <div class="result-title">Result</div>
+            <p class="result-value">Awaiting calculation</p>
+            <div class="result-explain">Index above 100 indicates growth. Below 100 indicates decline.</div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div class="footer-note">
+    This tool is educational and analytical. It is designed to make the business logic visible, not just the answer. For executive use, always validate the business meaning of the metric: a strong growth rate with weak margin may still signal a problem.
+  </div>
+
+  <script>
+    function formatNumber(value) {
+      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
+    }
+
+    function formatPercent(value) {
+      return `${formatNumber(value)}%`;
+    }
+
+    function setResult(id, valueText, explainText, tone = 'neutral') {
+      const box = document.getElementById(id);
+      const valueEl = box.querySelector('.result-value');
+      const explainEl = box.querySelector('.result-explain');
+      valueEl.textContent = valueText;
+      valueEl.className = 'result-value';
+      if (tone === 'positive') valueEl.classList.add('positive');
+      if (tone === 'negative') valueEl.classList.add('negative');
+      explainEl.innerHTML = explainText;
+    }
+
+    function getNumber(id) {
+      return parseFloat(document.getElementById(id).value);
+    }
+
+    function resetSection(inputIds, resultId) {
+      inputIds.forEach(id => document.getElementById(id).value = '');
+      setResult(resultId, 'Awaiting calculation', 'Enter values to generate the result and explanation.');
+    }
+
+    function calculateGrowth() {
+      const oldValue = getNumber('growthOld');
+      const newValue = getNumber('growthNew');
+      if (!isFinite(oldValue) || !isFinite(newValue) || oldValue === 0) {
+        setResult('growthResult', 'Invalid input', 'Old value must be provided and cannot be zero, because it is the base of the formula.', 'negative');
+        return;
+      }
+      const growth = ((newValue - oldValue) / oldValue) * 100;
+      const tone = growth >= 0 ? 'positive' : 'negative';
+      setResult(
+        'growthResult',
+        formatPercent(growth),
+        `You started with <strong>${formatNumber(oldValue)}</strong> and ended with <strong>${formatNumber(newValue)}</strong>.<br><br>
+        Formula applied: <code>((New - Old) / Old) × 100</code><br>
+        Calculation: <code>((${formatNumber(newValue)} - ${formatNumber(oldValue)}) / ${formatNumber(oldValue)}) × 100</code><br><br>
+        Interpretation: the value ${growth >= 0 ? 'grew' : 'declined'} by <strong>${formatPercent(Math.abs(growth))}</strong> relative to the original period.`,
+        tone
+      );
+    }
+
+    function calculateMargin() {
+      const revenue = getNumber('marginRevenue');
+      const cost = getNumber('marginCost');
+      if (!isFinite(revenue) || !isFinite(cost) || revenue === 0) {
+        setResult('marginResult', 'Invalid input', 'Revenue must be provided and cannot be zero because margin is measured against revenue.', 'negative');
+        return;
+      }
+      const margin = ((revenue - cost) / revenue) * 100;
+      const profit = revenue - cost;
+      const tone = margin >= 0 ? 'positive' : 'negative';
+      setResult(
+        'marginResult',
+        `${formatPercent(margin)} | Profit: ${formatNumber(profit)}`,
+        `Revenue is <strong>${formatNumber(revenue)}</strong> and cost is <strong>${formatNumber(cost)}</strong>.<br><br>
+        Formula applied: <code>((Revenue - Cost) / Revenue) × 100</code><br>
+        Calculation: <code>((${formatNumber(revenue)} - ${formatNumber(cost)}) / ${formatNumber(revenue)}) × 100</code><br><br>
+        Interpretation: after covering cost, you retain <strong>${formatPercent(margin)}</strong> of each revenue unit as gross margin.`,
+        tone
+      );
+    }
+
+    function calculateRuleOfThree() {
+      const a = getNumber('ruleA');
+      const b = getNumber('ruleB');
+      const c = getNumber('ruleC');
+      if (!isFinite(a) || !isFinite(b) || !isFinite(c) || a === 0) {
+        setResult('ruleResult', 'Invalid input', 'A, B, and C are required, and A cannot be zero because it is the proportional base.', 'negative');
+        return;
+      }
+      const x = (b * c) / a;
+      setResult(
+        'ruleResult',
+        `X = ${formatNumber(x)}`,
+        `You are solving the proportion <code>${formatNumber(a)} : ${formatNumber(b)} = ${formatNumber(c)} : X</code>.<br><br>
+        Formula applied: <code>X = (B × C) / A</code><br>
+        Calculation: <code>(${formatNumber(b)} × ${formatNumber(c)}) / ${formatNumber(a)}</code><br><br>
+        Interpretation: if the same ratio holds, the missing equivalent value is <strong>${formatNumber(x)}</strong>.`,
+        'positive'
+      );
+    }
+
+    function calculateSalesUplift() {
+      const before = getNumber('salesBefore');
+      const after = getNumber('salesAfter');
+      if (!isFinite(before) || !isFinite(after) || before === 0) {
+        setResult('salesResult', 'Invalid input', 'Sales before must be provided and cannot be zero.', 'negative');
+        return;
+      }
+      const uplift = ((after - before) / before) * 100;
+      const absolute = after - before;
+      const tone = uplift >= 0 ? 'positive' : 'negative';
+      setResult(
+        'salesResult',
+        `${formatPercent(uplift)} | Increment: ${formatNumber(absolute)}`,
+        `Sales moved from <strong>${formatNumber(before)}</strong> to <strong>${formatNumber(after)}</strong>.<br><br>
+        Formula applied: <code>((After - Before) / Before) × 100</code><br>
+        Absolute change: <code>${formatNumber(after)} - ${formatNumber(before)} = ${formatNumber(absolute)}</code><br><br>
+        Interpretation: the initiative produced a ${uplift >= 0 ? 'positive' : 'negative'} sales effect of <strong>${formatPercent(Math.abs(uplift))}</strong> versus the baseline.`,
+        tone
+      );
+    }
+
+    function calculatePercentageDifference() {
+      const one = getNumber('diffOne');
+      const two = getNumber('diffTwo');
+      const average = (one + two) / 2;
+      if (!isFinite(one) || !isFinite(two) || average === 0) {
+        setResult('diffResult', 'Invalid input', 'Both values are required and their average cannot be zero.', 'negative');
+        return;
+      }
+      const diff = (Math.abs(one - two) / average) * 100;
+      setResult(
+        'diffResult',
+        formatPercent(diff),
+        `You compared <strong>${formatNumber(one)}</strong> and <strong>${formatNumber(two)}</strong>.<br><br>
+        Formula applied: <code>(|Value 1 - Value 2| / ((Value 1 + Value 2) / 2)) × 100</code><br>
+        Calculation uses the average as the base rather than choosing one of the numbers.<br><br>
+        Interpretation: the two values are <strong>${formatPercent(diff)}</strong> apart in relative terms.`,
+        'positive'
+      );
+    }
+
+    function calculateSummary() {
+      const previous = getNumber('summaryPrevious');
+      const current = getNumber('summaryCurrent');
+      const cost = getNumber('summaryCost');
+      if (!isFinite(previous) || !isFinite(current) || !isFinite(cost) || previous === 0 || current === 0) {
+        setResult('summaryResult', 'Invalid input', 'Previous sales, current sales, and cost are all required. Previous and current sales cannot be zero.', 'negative');
+        return;
+      }
+      const absoluteGrowth = current - previous;
+      const growthRate = ((current - previous) / previous) * 100;
+      const grossProfit = current - cost;
+      const grossMargin = ((current - cost) / current) * 100;
+      const tone = growthRate >= 0 && grossMargin >= 0 ? 'positive' : 'negative';
+      setResult(
+        'summaryResult',
+        `Growth: ${formatPercent(growthRate)} | Margin: ${formatPercent(grossMargin)}`,
+        `<strong>Business summary</strong><br><br>
+        Previous sales: <strong>${formatNumber(previous)}</strong><br>
+        Current sales: <strong>${formatNumber(current)}</strong><br>
+        Current cost: <strong>${formatNumber(cost)}</strong><br><br>
+        Absolute sales increase: <strong>${formatNumber(absoluteGrowth)}</strong><br>
+        Growth rate: <strong>${formatPercent(growthRate)}</strong><br>
+        Gross profit: <strong>${formatNumber(grossProfit)}</strong><br>
+        Gross margin: <strong>${formatPercent(grossMargin)}</strong><br><br>
+        Interpretation: sales ${growthRate >= 0 ? 'expanded' : 'contracted'} by <strong>${formatPercent(Math.abs(growthRate))}</strong>, while the current period retains <strong>${formatPercent(grossMargin)}</strong> as gross margin. This is the type of combined view used in performance reviews.`,
+        tone
+      );
+    }
+
+    function calculateEvolution() {
+      const base = getNumber('evoBase');
+      const current = getNumber('evoCurrent');
+      if (!isFinite(base) || !isFinite(current) || base === 0) {
+        setResult('evoResult','Invalid input','Base value is required and cannot be zero.','negative');
+        return;
+      }
+      const index = (current / base) * 100;
+      const change = ((current-base)/base)*100;
+      const tone = index >=100 ? 'positive':'negative';
+      setResult(
+        'evoResult',
+        `Index: ${formatPercent(index)}`,
+        `Base value: <strong>${formatNumber(base)}</strong><br>
+        Current value: <strong>${formatNumber(current)}</strong><br><br>
+        Formula: <code>(Current / Base) × 100</code><br>
+        Calculation: <code>(${formatNumber(current)} / ${formatNumber(base)}) × 100</code><br><br>
+        Interpretation: performance is at <strong>${formatPercent(index)}</strong> versus base (100). This represents a change of <strong>${formatPercent(change)}</strong>.`,
+        tone
+      );
+    }
+
+    function calculateCAGR() {
+      const beginning = getNumber('cagrBeginning');
+      const ending = getNumber('cagrEnding');
+      const periods = getNumber('cagrPeriods');
+      if (!isFinite(beginning) || !isFinite(ending) || !isFinite(periods) || beginning <= 0 || ending <= 0 || periods <= 0) {
+        setResult('cagrResult', 'Invalid input', 'Beginning value, ending value, and number of periods are required. All must be greater than zero.', 'negative');
+        return;
+      }
+      const cagr = (Math.pow((ending / beginning), (1 / periods)) - 1) * 100;
+      const tone = cagr >= 0 ? 'positive' : 'negative';
+      setResult(
+        'cagrResult',
+        formatPercent(cagr),
+        `Beginning value: <strong>${formatNumber(beginning)}</strong><br>
+        Ending value: <strong>${formatNumber(ending)}</strong><br>
+        Periods: <strong>${formatNumber(periods)}</strong><br><br>
+        Formula: <code>((Ending / Beginning)^(1 / Periods) - 1) × 100</code><br>
+        Calculation: <code>(( ${formatNumber(ending)} / ${formatNumber(beginning)} )^(1 / ${formatNumber(periods)}) - 1) × 100</code><br><br>
+        Interpretation: this is the smoothed annualized growth rate needed to move from the starting value to the ending value over the selected period.`,
+        tone
+      );
+    }
+
+    function filterCalculators() {
+      const selected = document.getElementById('formulaFilter').value;
+      const cards = document.querySelectorAll('.calculator-card');
+      cards.forEach(card => {
+        const show = selected === 'all' || card.id === selected;
+        card.classList.toggle('hidden-card', !show);
+      });
+      if (selected !== 'all') {
+        const target = document.getElementById(selected);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function searchCalculators() {
+      const query = document.getElementById('formulaSearch').value.trim().toLowerCase();
+      const dropdown = document.getElementById('formulaFilter');
+      if (query.length > 0) {
+        dropdown.value = 'all';
+      }
+      const cards = document.querySelectorAll('.calculator-card');
+      cards.forEach(card => {
+        const text = `${card.id} ${card.dataset.keywords} ${card.innerText}`.toLowerCase();
+        const matches = query === '' || text.includes(query);
+        card.classList.toggle('hidden-card', !matches);
+      });
+    }
+  </script>
+</body>
+</html>
